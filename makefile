@@ -1,29 +1,33 @@
 .PHONY: be fe dev kill setup setup-be setup-fe info p_c kb opencode auth
 
-VENV_DIR := .venv
+VENV_DIR := backend/.venv
 PYTHON := $(VENV_DIR)/bin/python
 PIP := $(VENV_DIR)/bin/pip
 UVICORN := $(VENV_DIR)/bin/uvicorn
 
 $(PYTHON):
-	python3 -m venv $(VENV_DIR)
+	cd backend && python3 -m venv .venv
 
-$(VENV_DIR)/.deps-installed: requirements.txt | $(PYTHON)
+$(VENV_DIR)/.deps-installed: | $(PYTHON)
 	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+	$(PIP) install fastapi uvicorn
 	touch $(VENV_DIR)/.deps-installed
 
-be: setup-be
-	$(UVICORN) main:app --reload --host 0.0.0.0 --port 8001
+ROOT_DIR := $(shell pwd)
+VENV_BIN := $(ROOT_DIR)/backend/.venv/bin
+UVICORN := $(VENV_BIN)/uvicorn
 
-fe:
+be: setup-be
+	cd $(ROOT_DIR)/backend && PYTHONPATH=. $(UVICORN) app.main:app --reload --host 0.0.0.0 --port 8001
+
+fe: setup-fe
 	cd frontend && npm run dev -- --port 3001
 
-dev: kill
-	$(MAKE) -j2 be fe
+dev: setup
+	$(MAKE) be & $(MAKE) fe & wait
 
-setup: setup-be
-	@echo "Backend ready. Run 'make dev' to start."
+setup: setup-be setup-fe
+	@echo "Done. Run 'make dev' to start both services."
 
 setup-be: $(VENV_DIR)/.deps-installed
 
@@ -36,7 +40,6 @@ info:
 	@if [ -x "$(PYTHON)" ]; then \
 		echo "  Python path: $$(realpath $(PYTHON))"; \
 		echo "  Python version: $$($(PYTHON) --version)"; \
-		echo "  Pip path: $$(realpath $(PIP))"; \
 	else \
 		echo "  Python path: (venv not found, run: make setup-be)"; \
 	fi

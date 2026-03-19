@@ -1,0 +1,45 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "minimax/MiniMax-M2.5",
+  "autoupdate": true,
+  "server": {
+    "port": 4096
+  },
+  "provider": {},
+  "small_model": "anthropic/claude-haiku-4-5",
+  "default_agent": "build",
+  "share": "manual",
+  "snapshot": true,
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 10000
+  },
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**",
+      ".next/**",
+      "build/**",
+      ".venv/**",
+      "venv/**",
+      "__pycache__/**",
+      "*.pyc",
+      ".pytest_cache/**",
+      ".mypy_cache/**",
+      ".ruff_cache/**"
+    ]
+  },
+  "mcp": {},
+  "experimental": {},
+  "disabled_providers": [],
+  "enabled_providers": [],
+  "instructions": [],
+  "formatter": {},
+  "permission": {},
+  "agent": {},
+  "command": {},
+  "tools": {},
+  "plugin": []
+}
